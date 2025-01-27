@@ -3,4 +3,8 @@ model User {
   id    String     @id @default(uuid())
   name  String
   email String     @unique
+  bills Bill[]
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime? @updatedAt @db.Timestamptz(6)
+  deletedAt    DateTime?  @db.Timestamptz(6)
 }

@@ -1,0 +1,12 @@
+model ProductsOnBill {
+    bill    Bill      @relation(fields: [billId], references: [id])
+    billId  String
+    product Products  @relation(fields: [productId], references: [id])
+    productId String
+    createdAt    DateTime @default(now()) @db.Timestamptz(6)
+    updatedAt    DateTime? @updatedAt @db.Timestamptz(6)
+    deletedAt    DateTime?  @db.Timestamptz(6)
+
+    @@id([billId, productId])
+
+}
