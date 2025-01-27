@@ -168,4 +168,34 @@ export class KeycloakService {
 
     return { message: 'Logout successful' };
   }
+
+  // Refresh Token End point
+  async refreshToken(refreshToken: string) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('grant_type', 'refresh_token'); // Use refresh_token grant type
+    urlSearchParams.append('client_id', this.KEYCLOAK_CLIENT_ID);
+    urlSearchParams.append('client_secret', this.KEYCLOAK_APP_CLIENT_SECRET);
+    urlSearchParams.append('refresh_token', refreshToken);
+
+    try {
+      const res = await firstValueFrom(
+        this.httpService
+          .post(
+            `${this.KEYCLOAK_BASE_URL}/realms/${this.KEYCLOAK_REALM}/protocol/openid-connect/token`,
+            urlSearchParams,
+          )
+          .pipe(
+            catchError((error) => {
+              this.logger.error(error);
+              throw new UnauthorizedException('Failed to refresh token');
+            }),
+          ),
+      );
+
+      return res.data; // Returns the new access token, refresh token, and other details
+    } catch (error) {
+      this.logger.error(`Error refreshing token: ${error.message}`);
+      throw new InternalServerErrorException('Failed to refresh token');
+    }
+  }
 }

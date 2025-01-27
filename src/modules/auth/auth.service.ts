@@ -29,10 +29,14 @@ export class AuthService {
   }
 
   async login(username: string, password: string) {
-    return this.keycloakService.login(username, password);
+    return await this.keycloakService.login(username, password);
   }
 
   async logout(token: string) {
-    return this.keycloakService.logout(token);
+    return await this.keycloakService.logout(token);
+  }
+
+  async refreshToken(token: string) {
+    return await this.keycloakService.refreshToken(token);
   }
 }
