@@ -29,6 +29,39 @@ services:
     volumes:
       - keycloak_data:/opt/keycloak/data
 
+  loki:
+    container_name: my_planner_dev_loki
+    image: grafana/loki:latest
+    networks:
+      - 'grafana_network'
+    ports:
+      - '3100:3100'
+    volumes:
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    container_name: my_planner_dev_grafana
+    image: grafana/grafana:latest
+    networks:
+      - 'grafana_network'
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+    depends_on:
+      - loki
+
 volumes:
   postgres_data:
   keycloak_data:
+  loki_data:
+  grafana_data:
+
+networks:
+  grafana_network:
+    driver: bridge

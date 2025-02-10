@@ -3,7 +3,6 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,11 +14,10 @@ import {
   KEYCLOAK_GRANT_TYPE_KEY,
   KEYCLOAK_REALM_KEY,
 } from 'src/constants/common';
+import { Logger } from 'nestjs-pino';
 
 @Injectable()
 export class KeycloakService {
-  private readonly logger = new Logger(KeycloakService.name);
-
   private KEYCLOAK_BASE_URL: string;
   private KEYCLOAK_GRANT_TYPE: string;
   private KEYCLOAK_APP_CLIENT_SECRET: string;
@@ -29,6 +27,7 @@ export class KeycloakService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly logger: Logger,
   ) {
     this.KEYCLOAK_BASE_URL = this.configService.get<string>(
       KEYCLOAK_BASE_URL_KEY,
@@ -119,6 +118,7 @@ export class KeycloakService {
 
   // This is the login method
   async login(username: string, password: string) {
+    this.logger.log('Logging in user', username);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('grant_type', this.KEYCLOAK_GRANT_TYPE);
     urlSearchParams.append('client_id', this.KEYCLOAK_CLIENT_ID);
